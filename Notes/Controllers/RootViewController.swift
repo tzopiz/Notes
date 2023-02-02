@@ -55,7 +55,17 @@ class RootViewController: UITableViewController {
         super.loadView()
         tableView.reloadData()
     }
-       
+    private func nonDeletedNotes() -> [Note] {
+        var noDeleteNoteList = [Note]()
+        for note in noteList
+        {
+            if(note.deletedDate == nil)
+            {
+                noDeleteNoteList.append(note)
+            }
+        }
+        return noDeleteNoteList
+    }
     
     private func setUpView(){
         createTableView()
@@ -113,10 +123,25 @@ class RootViewController: UITableViewController {
 //    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
 //        return true
 //    }
+////    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+////        let item = noteList[sourceIndexPath.row]
+////        noteList.remove(at: sourceIndexPath.row)
+////        noteList.insert(item, at: destinationIndexPath.row)
+////        tableView.reloadData()
+////    }
+////
 //    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-//        let item = noteList[sourceIndexPath.row]
-//        noteList.remove(at: sourceIndexPath.row)
-//        noteList.insert(item, at: destinationIndexPath.row)
+//        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+//        let context: NSManagedObjectContext = appDelegate.persistentContainer.viewContext
+//        let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
+//        let newNote = Note(entity: entity!, insertInto: context)
+//
+//        newNote.id = noteList.count as NSNumber
+//        newNote.name = nonDeletedNotes()[sourceIndexPath.row].name
+//        newNote.details = nonDeletedNotes()[sourceIndexPath.row].details
+//        nonDeletedNotes()[sourceIndexPath.row].deletedDate = Date()
+//        noteList.insert(newNote, at: destinationIndexPath.row)
+//
 //        tableView.reloadData()
 //    }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -201,15 +226,5 @@ class RootViewController: UITableViewController {
         let vc = NoteViewController()
         self.navigationController?.pushViewController(vc, animated: true)
     }
-    func nonDeletedNotes() -> [Note] {
-        var noDeleteNoteList = [Note]()
-        for note in noteList
-        {
-            if(note.deletedDate == nil)
-            {
-                noDeleteNoteList.append(note)
-            }
-        }
-        return noDeleteNoteList
-    }
+    
 }
