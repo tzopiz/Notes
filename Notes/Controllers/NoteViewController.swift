@@ -73,11 +73,49 @@ class NoteViewController: UIViewController {
         }
     }
     
-    private func copy(action: UIAction) { }
-    private func rename(action: UIAction) {
-        
+    private func copy(action: UIAction) {
+        let pBoard = UIPasteboard.general
+        pBoard.string = (selectedNote?.name ?? "") + "\n" + (selectedNote?.details ?? "")
     }
-    private func duplicate(action: UIAction) { }
+    
+    private func rename(action: UIAction) {
+        showInputDialog(title: "Rename",
+                        subtitle: "Enter a new title",
+                        actionTitle: "Enter",
+                        cancelTitle: "Cancel",
+                        inputPlaceholder: "New note",
+                        inputKeyboardType: .default,
+                        actionHandler: { (input:String?) in self.title = input ?? "" })
+    }
+    
+    private func duplicate(action: UIAction) {
+        let alertController = UIAlertController(title: "", message: "A copy has been created", preferredStyle: .alert)
+        alertController.setValue(
+            NSAttributedString(
+                string: alertController.message!,
+                attributes: [NSAttributedString.Key.font: res.fonts.font(named: "regular", 23)!,
+                                NSAttributedString.Key.foregroundColor: UIColor.black]),
+            forKey: "attributedMessage")
+
+        let actionOk = UIAlertAction(title: "Okey", style: .default) { (action) in
+             let appDelegate = UIApplication.shared.delegate as! AppDelegate
+             let context: NSManagedObjectContext = appDelegate.persistentContainer.viewContext
+             let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
+             let newNote = Note(entity: entity!, insertInto: context)
+             
+             newNote.id = noteList.count as NSNumber
+            newNote.name = (self.selectedNote?.name ?? "" ) + " copy"
+            newNote.details = self.selectedNote?.details
+             do{
+                 try context.save()
+                 noteList.append(newNote)
+             } catch {
+                 print("context save error in @objc func back")
+             }
+        }
+        alertController.addAction(actionOk)
+        self.present(alertController, animated: true, completion: nil)
+    }
     
     private func delete(action: UIAction){
         let alertController = UIAlertController(title: "Are you sure?", message: "", preferredStyle: .alert)
@@ -109,7 +147,6 @@ class NoteViewController: UIViewController {
             catch {
                 print("Fetch Failed")
             }
-            self.navigationController?.popViewController(animated: true)
         }
         alertController.addAction(actionCancel)
         alertController.addAction(actionDelete)
@@ -143,14 +180,12 @@ class NoteViewController: UIViewController {
             textView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
         ])
         
-        
-        
     }
-    func menuHandler() {
-        NotificationCenter.default.addObserver(self, selector: #selector(updateTextField), name: UITextView.keyboardDidShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateTextField), name: UITextView.keyboardWillHideNotification, object: nil)
+    private func menuHandler() {
+        NotificationCenter.default.addObserver(self, selector: #selector(updateText), name: UITextView.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateText), name: UITextView.keyboardWillHideNotification, object: nil)
     }
-    @objc func updateTextField(_ sender: Notification){
+    @objc func updateText(_ sender: Notification){
             
         let userInfo = sender.userInfo
         let getKeyboardRect = (userInfo! [UIResponder.keyboardFrameEndUserInfoKey] as! NSValue ).cgRectValue
@@ -165,5 +200,30 @@ class NoteViewController: UIViewController {
         textView.scrollRangeToVisible(textView.selectedRange)
         
     }
+    private func showInputDialog(title:String? = nil,
+                            subtitle:String? = nil,
+                            actionTitle:String? = "",
+                            cancelTitle:String? = "",
+                            inputPlaceholder:String? = nil,
+                            inputKeyboardType:UIKeyboardType = UIKeyboardType.default,
+                            cancelHandler: ((UIAlertAction) -> Swift.Void)? = nil,
+                            actionHandler: ((_ text: String?) -> Void)? = nil) {
+           
+           let alert = UIAlertController(title: title, message: subtitle, preferredStyle: .alert)
+           alert.addTextField { (textField:UITextField) in
+               textField.placeholder = inputPlaceholder
+               textField.keyboardType = inputKeyboardType
+           }
+           alert.addAction(UIAlertAction(title: actionTitle, style: .default, handler: { (action:UIAlertAction) in
+               guard let textField =  alert.textFields?.first else {
+                   actionHandler?(nil)
+                   return
+               }
+               actionHandler?(textField.text)
+           }))
+           alert.addAction(UIAlertAction(title: cancelTitle, style: .cancel, handler: cancelHandler))
+           
+           self.present(alert, animated: true, completion: nil)
+       }
 }
 

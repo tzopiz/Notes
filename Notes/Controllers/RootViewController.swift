@@ -50,10 +50,12 @@ class RootViewController: UITableViewController {
         }
         setUpView()
     }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        super.loadView()
         tableView.reloadData()
     }
+       
     
     private func setUpView(){
         createTableView()
@@ -95,7 +97,7 @@ class RootViewController: UITableViewController {
         
         cell.backgroundColor = res.colors.background
         cell.separatorInset = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
-
+        tableView.backgroundColor = res.colors.background
         return cell
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -108,15 +110,15 @@ class RootViewController: UITableViewController {
         self.navigationController?.pushViewController(vc, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
     }
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let item = noteList[sourceIndexPath.row]
-        noteList.remove(at: sourceIndexPath.row)
-        noteList.insert(item, at: destinationIndexPath.row)
-        tableView.reloadData()
-    }
+//    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+//        return true
+//    }
+//    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+//        let item = noteList[sourceIndexPath.row]
+//        noteList.remove(at: sourceIndexPath.row)
+//        noteList.insert(item, at: destinationIndexPath.row)
+//        tableView.reloadData()
+//    }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
@@ -126,11 +128,32 @@ class RootViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath){
-        tableView.beginUpdates()
-        noteList.remove(at: indexPath.row)
-        tableView.deleteRows(at: [indexPath], with: .fade)
-        tableView.endUpdates()
+        
+        var selectedNote: Note!
+        selectedNote = nonDeletedNotes()[indexPath.row]
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context: NSManagedObjectContext = appDelegate.persistentContainer.viewContext
+        
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Note")
+        do {
+            let results:NSArray = try context.fetch(request) as NSArray
+            for result in results {
+                let note = result as! Note
+                if note == selectedNote{
+                    tableView.beginUpdates()
+                    note.deletedDate = Date()
+                    tableView.deleteRows(at: [indexPath], with: .fade)
+                    try context.save()
+                    tableView.endUpdates()
+                }
+            }
+        }
+        catch {
+            print("Fetch Failed")
+        }
     }
+
     
     func insertRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation) { }
     func deleteRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation){ }
@@ -159,7 +182,7 @@ class RootViewController: UITableViewController {
         view.backgroundColor = res.colors.background
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
-        navigationItem.compactAppearance = appearance // For iPhone small navigation bar in landscape.
+        navigationItem.compactAppearance = appearance
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(createNote)),
             UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(buttonEdit))
@@ -173,11 +196,12 @@ class RootViewController: UITableViewController {
     
     @objc func buttonEdit() { tableView.isEditing = !tableView.isEditing }
     @objc func createNote(){
+        tableView.isEditing = false
         isEditingNote = false
         let vc = NoteViewController()
         self.navigationController?.pushViewController(vc, animated: true)
     }
-    private func nonDeletedNotes() -> [Note] {
+    func nonDeletedNotes() -> [Note] {
         var noDeleteNoteList = [Note]()
         for note in noteList
         {
