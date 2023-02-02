@@ -74,7 +74,9 @@ class NoteViewController: UIViewController {
     }
     
     private func copy(action: UIAction) { }
-    private func rename(action: UIAction) { }
+    private func rename(action: UIAction) {
+        
+    }
     private func duplicate(action: UIAction) { }
     
     private func delete(action: UIAction){

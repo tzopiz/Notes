@@ -23,10 +23,25 @@ class RootViewController: UITableViewController {
             let context: NSManagedObjectContext = appDelegate.persistentContainer.viewContext
             let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Note")
             do {
+                
                 let results: NSArray = try context.fetch(request) as NSArray
                 for result in results {
                     let note = result as! Note
                     noteList.append(note)
+                }
+                if noteList.isEmpty{
+                     let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
+                     let newNote = Note(entity: entity!, insertInto: context)
+                     
+                     newNote.id = noteList.count as NSNumber
+                     newNote.name = "Hello"
+                     newNote.details = "It's my app"
+                     do{
+                         try context.save()
+                         noteList.append(newNote)
+                     } catch {
+                         print("context save error in @objc func back")
+                     }
                 }
             }
             catch {
