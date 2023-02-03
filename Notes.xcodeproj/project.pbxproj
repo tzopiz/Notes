@@ -50,7 +50,6 @@
 		0A72DEDE298BE8ED002EEFBA = {
 			isa = PBXGroup;
 			children = (
-				0A3C4E5E298D59E300740A78 /* README.md */,
 				0A72DEE9298BE8ED002EEFBA /* Notes */,
 				0A72DEE8298BE8ED002EEFBA /* Products */,
 			);
@@ -74,6 +73,7 @@
 				0A72DEF6298BE8EE002EEFBA /* Assets.xcassets */,
 				0A72DEF8298BE8EE002EEFBA /* LaunchScreen.storyboard */,
 				0A72DEFB298BE8EE002EEFBA /* Info.plist */,
+				0A3C4E5E298D59E300740A78 /* README.md */,
 			);
 			path = Notes;
 			sourceTree = "<group>";
