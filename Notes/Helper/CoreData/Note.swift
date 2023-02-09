@@ -14,8 +14,8 @@ var noteList = [Note]()
 class Note: NSManagedObject{
     
     @NSManaged var id: NSNumber!
-    @NSManaged var name: String!
+    @NSManaged var title: String!
     @NSManaged var details: String!
-    @NSManaged var deletedDate: Date?
+    @NSManaged var isExist: NSNumber?
     
 }

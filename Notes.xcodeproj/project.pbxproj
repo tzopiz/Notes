@@ -11,13 +11,13 @@
 		0A72DEEB298BE8ED002EEFBA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72DEEA298BE8ED002EEFBA /* AppDelegate.swift */; };
 		0A72DEED298BE8ED002EEFBA /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72DEEC298BE8ED002EEFBA /* SceneDelegate.swift */; };
 		0A72DEEF298BE8ED002EEFBA /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72DEEE298BE8ED002EEFBA /* RootViewController.swift */; };
-		0A72DEF5298BE8ED002EEFBA /* Notes.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0A72DEF3298BE8ED002EEFBA /* Notes.xcdatamodeld */; };
 		0A72DEF7298BE8EE002EEFBA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A72DEF6298BE8EE002EEFBA /* Assets.xcassets */; };
 		0A72DEFA298BE8EE002EEFBA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A72DEF8298BE8EE002EEFBA /* LaunchScreen.storyboard */; };
 		0A72DF02298BE98C002EEFBA /* NoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72DF01298BE98C002EEFBA /* NoteViewController.swift */; };
 		0A72DF05298BE9B5002EEFBA /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72DF04298BE9B5002EEFBA /* Note.swift */; };
 		0A72DF07298BE9C9002EEFBA /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72DF06298BE9C9002EEFBA /* Resources.swift */; };
 		0A72DF0A298BE9F0002EEFBA /* ext UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72DF09298BE9F0002EEFBA /* ext UIColor.swift */; };
+		0A77257F2995575C006158C6 /* Notes.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0A77257D2995575C006158C6 /* Notes.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,7 +26,6 @@
 		0A72DEEA298BE8ED002EEFBA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A72DEEC298BE8ED002EEFBA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		0A72DEEE298BE8ED002EEFBA /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
-		0A72DEF4298BE8ED002EEFBA /* Notes.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Notes.xcdatamodel; sourceTree = "<group>"; };
 		0A72DEF6298BE8EE002EEFBA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0A72DEF9298BE8EE002EEFBA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0A72DEFB298BE8EE002EEFBA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -34,6 +33,7 @@
 		0A72DF04298BE9B5002EEFBA /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		0A72DF06298BE9C9002EEFBA /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
 		0A72DF09298BE9F0002EEFBA /* ext UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ext UIColor.swift"; sourceTree = "<group>"; };
+		0A77257E2995575C006158C6 /* Notes.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Notes.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,8 +90,8 @@
 		0A72DF08298BE9D6002EEFBA /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
-				0A72DEF3298BE8ED002EEFBA /* Notes.xcdatamodeld */,
 				0A72DF04298BE9B5002EEFBA /* Note.swift */,
+				0A77257D2995575C006158C6 /* Notes.xcdatamodeld */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -180,10 +180,10 @@
 				0A72DEEF298BE8ED002EEFBA /* RootViewController.swift in Sources */,
 				0A72DEEB298BE8ED002EEFBA /* AppDelegate.swift in Sources */,
 				0A72DF0A298BE9F0002EEFBA /* ext UIColor.swift in Sources */,
+				0A77257F2995575C006158C6 /* Notes.xcdatamodeld in Sources */,
 				0A72DF07298BE9C9002EEFBA /* Resources.swift in Sources */,
 				0A72DEED298BE8ED002EEFBA /* SceneDelegate.swift in Sources */,
 				0A72DF02298BE98C002EEFBA /* NoteViewController.swift in Sources */,
-				0A72DEF5298BE8ED002EEFBA /* Notes.xcdatamodeld in Sources */,
 				0A72DF05298BE9B5002EEFBA /* Note.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -394,12 +394,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		0A72DEF3298BE8ED002EEFBA /* Notes.xcdatamodeld */ = {
+		0A77257D2995575C006158C6 /* Notes.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				0A72DEF4298BE8ED002EEFBA /* Notes.xcdatamodel */,
+				0A77257E2995575C006158C6 /* Notes.xcdatamodel */,
 			);
-			currentVersion = 0A72DEF4298BE8ED002EEFBA /* Notes.xcdatamodel */;
+			currentVersion = 0A77257E2995575C006158C6 /* Notes.xcdatamodel */;
 			path = Notes.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

@@ -23,25 +23,25 @@ class RootViewController: UITableViewController {
             let context: NSManagedObjectContext = appDelegate.persistentContainer.viewContext
             let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Note")
             do {
-                
                 let results: NSArray = try context.fetch(request) as NSArray
                 for result in results {
-                    let note = result as! Note
+                let note = result as! Note
                     noteList.append(note)
                 }
                 if noteList.isEmpty{
-                     let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
-                     let newNote = Note(entity: entity!, insertInto: context)
-                     
-                     newNote.id = noteList.count as NSNumber
-                     newNote.name = "Hello"
-                     newNote.details = "It's my app"
-                     do{
-                         try context.save()
-                         noteList.append(newNote)
-                     } catch {
-                         print("context save error in @objc func back")
-                     }
+                let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
+                let newNote = Note(entity: entity!, insertInto: context)
+
+                newNote.id = noteList.count as NSNumber
+                newNote.title = "Hello"
+                newNote.details = "It's my app"
+                newNote.isExist = 1
+                do{
+                    try context.save()
+                    noteList.append(newNote)
+                } catch {
+                    print("error viewDidLoad save data")
+                    }
                 }
             }
             catch {
@@ -59,7 +59,7 @@ class RootViewController: UITableViewController {
         var noDeleteNoteList = [Note]()
         for note in noteList
         {
-            if(note.deletedDate == nil)
+            if(note.isExist == 1)
             {
                 noDeleteNoteList.append(note)
             }
@@ -93,7 +93,7 @@ class RootViewController: UITableViewController {
         selectionColor.backgroundColor = res.colors.separator
 
         var content = cell.defaultContentConfiguration()
-        content.text = thisNote.name
+        content.text = thisNote.title
         content.secondaryText = thisNote.details
         content.textProperties.font = res.fonts.font(named: "bold", 22)!
         content.secondaryTextProperties.font = res.fonts.font(named: "regular", 12)!
@@ -142,7 +142,7 @@ class RootViewController: UITableViewController {
                 let note = result as! Note
                 if note == selectedNote{
                     tableView.beginUpdates()
-                    note.deletedDate = Date()
+                    note.isExist = -1
                     tableView.deleteRows(at: [indexPath], with: .fade)
                     try context.save()
                     tableView.endUpdates()

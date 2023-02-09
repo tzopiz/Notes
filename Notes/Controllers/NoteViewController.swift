@@ -26,11 +26,13 @@ class NoteViewController: UIViewController {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             let context: NSManagedObjectContext = appDelegate.persistentContainer.viewContext
             let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
+            
             selectedNote = Note(entity: entity!, insertInto: context)
-            selectedNote?.name = "New Note"
+            selectedNote?.title = "New Note"
             selectedNote?.details = ""
+            selectedNote?.isExist = 1
         }
-        title = selectedNote?.name
+        title = selectedNote?.title
         textView.text = selectedNote?.details
         
         view.backgroundColor = res.colors.background
@@ -59,7 +61,7 @@ class NoteViewController: UIViewController {
         isNewNote = false
     }
     private func updateSelectedNoteData(needBack f: Bool){
-        selectedNote?.name = title
+        selectedNote?.title = title
         selectedNote?.details = textView.text
         if f { self.navigationController?.popViewController(animated: true) }
     }
@@ -70,8 +72,9 @@ class NoteViewController: UIViewController {
         let newNote = Note(entity: entity!, insertInto: context)
         
         newNote.id = noteList.count as NSNumber
-        newNote.name = title
+        newNote.title = title
         newNote.details = textView.text
+        newNote.isExist = 1
         
         do{
             try context.save()
@@ -85,7 +88,7 @@ class NoteViewController: UIViewController {
     private func copy(action: UIAction) {
         saveData(needBack: false)
         let pBoard = UIPasteboard.general
-        pBoard.string = (selectedNote?.name ?? "") + "\n" + (selectedNote?.details ?? "")
+        pBoard.string = (selectedNote?.title ?? "") + "\n" + (selectedNote?.details ?? "")
     }
     private func rename(action: UIAction) {
         saveData(needBack: false)
@@ -113,8 +116,9 @@ class NoteViewController: UIViewController {
             let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
             let newNote = Note(entity: entity!, insertInto: context)
             newNote.id = noteList.count as NSNumber
-            newNote.name = (self.selectedNote?.name ?? "" ) + " copy"
+            newNote.title = (self.selectedNote?.title ?? "" ) + " copy"
             newNote.details = self.selectedNote?.details
+            newNote.isExist = 1
             do{
                 try context.save()
                 noteList.append(newNote)
@@ -147,7 +151,7 @@ class NoteViewController: UIViewController {
                 for result in results {
                     let note = result as! Note
                     if (note == self.selectedNote) {
-                        note.deletedDate = Date()
+                        note.isExist = -1
                         try context.save()
                         self.navigationController?.popViewController(animated: true)
                     }
@@ -163,7 +167,7 @@ class NoteViewController: UIViewController {
     }
     private func share(action: UIAction){
         saveData(needBack: false)
-        self.activityViewController = UIActivityViewController(activityItems: [(selectedNote?.name ?? "") + "\n" + (selectedNote?.details ?? "")], applicationActivities: nil)
+        self.activityViewController = UIActivityViewController(activityItems: [(selectedNote?.title ?? "") + "\n" + (selectedNote?.details ?? "")], applicationActivities: nil)
         self.present(self.activityViewController!, animated: true)
     }
     
