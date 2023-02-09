@@ -19,17 +19,19 @@ class NoteViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpViews()
-        
     }
     private func setUpViews(){
         
         if selectedNote == nil{
-            title = "New note"
-            textView.text = ""
-        } else {
-            title = selectedNote?.name
-            textView.text = selectedNote?.details
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            let context: NSManagedObjectContext = appDelegate.persistentContainer.viewContext
+            let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
+            selectedNote = Note(entity: entity!, insertInto: context)
+            selectedNote?.name = "New Note"
+            selectedNote?.details = ""
         }
+        title = selectedNote?.name
+        textView.text = selectedNote?.details
         
         view.backgroundColor = res.colors.background
         let barButtonMenu = UIMenu(
@@ -48,37 +50,45 @@ class NoteViewController: UIViewController {
         menuHandler()
     }
     @objc func back(){
-        if isEditingNote {
-            self.navigationController?.popViewController(animated: true)
-            selectedNote?.name = title
-            selectedNote?.details = textView.text
-        } else {
-           
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            let context: NSManagedObjectContext = appDelegate.persistentContainer.viewContext
-            let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
-            let newNote = Note(entity: entity!, insertInto: context)
-            
-            newNote.id = noteList.count as NSNumber
-            newNote.name = title
-            newNote.details = textView.text
-            do{
-                try context.save()
-                noteList.append(newNote)
-                self.navigationController?.popViewController(animated: true)
-            } catch {
-                print("context save error in @objc func back")
-            }
-
+        saveData(needBack: true)
+    }
+    
+    private func saveData(needBack f: Bool){
+        if isNewNote { createNewNote(needBack: f) }
+        updateSelectedNoteData(needBack: f)
+        isNewNote = false
+    }
+    private func updateSelectedNoteData(needBack f: Bool){
+        selectedNote?.name = title
+        selectedNote?.details = textView.text
+        if f { self.navigationController?.popViewController(animated: true) }
+    }
+    private func createNewNote(needBack f: Bool){
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context: NSManagedObjectContext = appDelegate.persistentContainer.viewContext
+        let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
+        let newNote = Note(entity: entity!, insertInto: context)
+        
+        newNote.id = noteList.count as NSNumber
+        newNote.name = title
+        newNote.details = textView.text
+        
+        do{
+            try context.save()
+            noteList.append(newNote)
+            if f { self.navigationController?.popViewController(animated: true) }
+        } catch {
+            print("can't save data")
         }
     }
     
     private func copy(action: UIAction) {
+        saveData(needBack: false)
         let pBoard = UIPasteboard.general
         pBoard.string = (selectedNote?.name ?? "") + "\n" + (selectedNote?.details ?? "")
     }
-    
     private func rename(action: UIAction) {
+        saveData(needBack: false)
         showInputDialog(title: "Rename",
                         subtitle: "Enter a new title",
                         actionTitle: "Enter",
@@ -87,8 +97,8 @@ class NoteViewController: UIViewController {
                         inputKeyboardType: .default,
                         actionHandler: { (input:String?) in self.title = input ?? "" })
     }
-    
     private func duplicate(action: UIAction) {
+        saveData(needBack: false)
         let alertController = UIAlertController(title: "", message: "A copy has been created", preferredStyle: .alert)
         alertController.setValue(
             NSAttributedString(
@@ -98,26 +108,25 @@ class NoteViewController: UIViewController {
             forKey: "attributedMessage")
 
         let actionOk = UIAlertAction(title: "Okey", style: .default) { (action) in
-             let appDelegate = UIApplication.shared.delegate as! AppDelegate
-             let context: NSManagedObjectContext = appDelegate.persistentContainer.viewContext
-             let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
-             let newNote = Note(entity: entity!, insertInto: context)
-             
-             newNote.id = noteList.count as NSNumber
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            let context: NSManagedObjectContext = appDelegate.persistentContainer.viewContext
+            let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
+            let newNote = Note(entity: entity!, insertInto: context)
+            newNote.id = noteList.count as NSNumber
             newNote.name = (self.selectedNote?.name ?? "" ) + " copy"
             newNote.details = self.selectedNote?.details
-             do{
-                 try context.save()
-                 noteList.append(newNote)
-             } catch {
-                 print("context save error in @objc func back")
-             }
+            do{
+                try context.save()
+                noteList.append(newNote)
+            } catch {
+                print("erroe save duplicate note")
+            }
         }
         alertController.addAction(actionOk)
         self.present(alertController, animated: true, completion: nil)
     }
-    
     private func delete(action: UIAction){
+        saveData(needBack: false)
         let alertController = UIAlertController(title: "Are you sure?", message: "", preferredStyle: .alert)
         alertController.setValue(
             NSAttributedString(
@@ -153,11 +162,12 @@ class NoteViewController: UIViewController {
         self.present(alertController, animated: true, completion: nil)
     }
     private func share(action: UIAction){
-        self.activityViewController = UIActivityViewController(activityItems: [(title ?? "") + "\n" + (textView.text ?? "")], applicationActivities: nil)
+        saveData(needBack: false)
+        self.activityViewController = UIActivityViewController(activityItems: [(selectedNote?.name ?? "") + "\n" + (selectedNote?.details ?? "")], applicationActivities: nil)
         self.present(self.activityViewController!, animated: true)
     }
     
-    private func createScrollView(){
+    fileprivate func createScrollView(){
         view.addSubview(scrollView)
         view.addSubview(textView)
         
@@ -181,7 +191,8 @@ class NoteViewController: UIViewController {
         ])
         
     }
-    private func menuHandler() {
+    
+    fileprivate func menuHandler() {
         NotificationCenter.default.addObserver(self, selector: #selector(updateText), name: UITextView.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateText), name: UITextView.keyboardWillHideNotification, object: nil)
     }
@@ -200,7 +211,7 @@ class NoteViewController: UIViewController {
         textView.scrollRangeToVisible(textView.selectedRange)
         
     }
-    private func showInputDialog(title:String? = nil,
+    fileprivate func showInputDialog(title:String? = nil,
                             subtitle:String? = nil,
                             actionTitle:String? = "",
                             cancelTitle:String? = "",

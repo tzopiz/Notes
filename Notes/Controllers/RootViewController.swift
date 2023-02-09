@@ -8,7 +8,7 @@
 import UIKit
 import CoreData
 
-var isEditingNote = false
+var isNewNote = false
 
 class RootViewController: UITableViewController {
     
@@ -72,7 +72,7 @@ class RootViewController: UITableViewController {
         changeNavVC()
     }
     
-    private func createTableView(){
+    fileprivate func createTableView(){
         tableView = createTable(frame: CGRect.zero, style: .plain, backgroundColor: res.colors.background)
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIndentifier)
     }
@@ -111,8 +111,8 @@ class RootViewController: UITableViewController {
         return cell
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        isEditingNote = true
         
+        isNewNote = false
         let vc = NoteViewController()
         let selectedNote: Note!
         selectedNote = nonDeletedNotes()[indexPath.row]
@@ -120,38 +120,13 @@ class RootViewController: UITableViewController {
         self.navigationController?.pushViewController(vc, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
     }
-//    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-//        return true
-//    }
-////    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-////        let item = noteList[sourceIndexPath.row]
-////        noteList.remove(at: sourceIndexPath.row)
-////        noteList.insert(item, at: destinationIndexPath.row)
-////        tableView.reloadData()
-////    }
-////
-//    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-//        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-//        let context: NSManagedObjectContext = appDelegate.persistentContainer.viewContext
-//        let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
-//        let newNote = Note(entity: entity!, insertInto: context)
-//
-//        newNote.id = noteList.count as NSNumber
-//        newNote.name = nonDeletedNotes()[sourceIndexPath.row].name
-//        newNote.details = nonDeletedNotes()[sourceIndexPath.row].details
-//        nonDeletedNotes()[sourceIndexPath.row].deletedDate = Date()
-//        noteList.insert(newNote, at: destinationIndexPath.row)
-//
-//        tableView.reloadData()
-//    }
+    
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
-
     override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         return .delete
     }
-
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath){
         
         var selectedNote: Note!
@@ -179,14 +154,39 @@ class RootViewController: UITableViewController {
         }
     }
 
-    
+//        override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+//            return true
+//        }
+//        override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+//            let item = noteList[sourceIndexPath.row]
+//            noteList.remove(at: sourceIndexPath.row)
+//            noteList.insert(item, at: destinationIndexPath.row)
+//            tableView.reloadData()
+//        }
+//
+//        override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+//            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+//            let context: NSManagedObjectContext = appDelegate.persistentContainer.viewContext
+//            let entity = NSEntityDescription.entity(forEntityName: "Note", in: context)
+//            let newNote = Note(entity: entity!, insertInto: context)
+//
+//            newNote.id = noteList.count as NSNumber
+//            newNote.name = nonDeletedNotes()[sourceIndexPath.row].name
+//            newNote.details = nonDeletedNotes()[sourceIndexPath.row].details
+//            nonDeletedNotes()[sourceIndexPath.row].deletedDate = Date()
+//            noteList.insert(newNote, at: destinationIndexPath.row)
+//
+//            tableView.reloadData()
+//        }
+
+    // MARK: - Update tableView
     func insertRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation) { }
     func deleteRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation){ }
     func reloadRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation) { }
     func moveRow(at indexPath: IndexPath, to newIndexPath: IndexPath) { }
     
     // MARK: - create UI
-    private func createTable(frame: CGRect, style: UITableView.Style, backgroundColor: UIColor = .white) -> UITableView {
+    fileprivate func createTable(frame: CGRect, style: UITableView.Style, backgroundColor: UIColor = .white) -> UITableView {
         let myTableView = UITableView(frame: frame, style: style)
         myTableView.backgroundColor = backgroundColor
         myTableView.translatesAutoresizingMaskIntoConstraints = false
@@ -196,7 +196,7 @@ class RootViewController: UITableViewController {
         
         return myTableView
     }
-    private func changeNavVC(){
+    fileprivate func changeNavVC(){
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -221,8 +221,8 @@ class RootViewController: UITableViewController {
     
     @objc func buttonEdit() { tableView.isEditing = !tableView.isEditing }
     @objc func createNote(){
+        isNewNote = true
         tableView.isEditing = false
-        isEditingNote = false
         let vc = NoteViewController()
         self.navigationController?.pushViewController(vc, animated: true)
     }
