@@ -97,8 +97,8 @@ class RootViewController: UITableViewController {
         content.secondaryText = thisNote.details
         content.textProperties.font = res.fonts.font(named: "bold", 22)!
         content.secondaryTextProperties.font = res.fonts.font(named: "regular", 12)!
-        content.textProperties.numberOfLines = 1
-        content.secondaryTextProperties.numberOfLines = 2
+        content.textProperties.numberOfLines = 0
+        content.secondaryTextProperties.numberOfLines = 0
         content.image = res.images.image(named: "cell")
         cell.contentConfiguration = content
         cell.accessoryType = .disclosureIndicator
